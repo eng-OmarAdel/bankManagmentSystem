@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package banklogicserver;
+package    BankLogicServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,11 +12,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
-
 /**
  *
  * @author OmarAdel
  */
+
 class clientHandler implements Runnable
 {
 
@@ -50,10 +50,150 @@ class clientHandler implements Runnable
             //Here the server creates IO streams with the client
             DataOutputStream dos = new DataOutputStream(c.getOutputStream());
             DataInputStream dis = new DataInputStream(c.getInputStream());
-
+            DataOutputStream dos1 = new DataOutputStream(dbSocket.getOutputStream());
+            DataInputStream dis1 = new DataInputStream(dbSocket.getInputStream());
+            
+            int choice=dis.readInt();
+            dos1.writeInt(choice);
             //4.perform IO with client
-            while (true)
+            while (choice!=9)
             {
+                System.out.println("server inside while");
+                System.out.println(choice);
+                if(choice==5)
+                    {
+                        System.out.println("Logical server inside withdraw");
+                        float amount=dis.readFloat();
+                        String result;
+                            if(amount>0)
+                            {
+                               result ="okay";
+                               dos.writeUTF(result);
+                               float balance =dis1.readFloat();
+                                if(amount<=balance)
+                                    {
+                                        result="good";
+                                        balance=balance-amount;
+                                        dos1.writeUTF(result);
+                                        dos1.writeFloat(balance);
+                                    }
+                                    else
+                                    {
+                                        result="error1";
+                                        dos1.writeUTF(result);
+                                    }
+                               dos.writeUTF(result);
+                            }
+                            else
+                            {
+                                result="error";
+                                dos.writeUTF(result);
+                            }   
+                    }
+                 if(choice==6)
+                    {
+                         System.out.println("Logical server inside local transfer");
+                          int destination=dis.readInt();
+                          dos1.writeInt(destination);
+                           String result;
+                           result=dis1.readUTF();
+                          dos.writeUTF(result);
+                          if(!(result.equals("error")))
+                          {
+                            float amount=dis.readFloat();
+                            if(amount>0)
+                            {
+                               result ="okay";
+                               dos.writeUTF(result);
+                               float balance=dis1.readFloat();
+                               if(amount<=balance)
+                                    {
+                                        result="good";
+                                        dos1.writeUTF(result);
+                                        balance=balance-amount;
+                                        dos1.writeFloat(balance);
+                                    }
+                            else
+                                    {
+                                        result="error1";
+                                        dos1.writeUTF(result);
+                                    }
+                               dos.writeUTF(result);
+                            }
+                            else
+                            {
+                                result="error";
+                                dos.writeUTF(result);
+                            }   
+                              
+                          }
+                    }
+                 if(choice==7)
+                    {
+                        System.out.println("Logical server inside external transfer ");
+                        int bankid=dis.readInt(); // define ip and port upon bankid from some list
+                        //----------
+                        System.out.println("before");
+                         String external_Ip = "localhost";
+                         int external_port = 3333; //needs changing
+                         Socket externalSocket = new Socket(external_Ip, external_port);
+                         DataOutputStream dos2 = new DataOutputStream(externalSocket.getOutputStream());
+                         DataInputStream dis2 = new DataInputStream(externalSocket.getInputStream());
+                        //----------
+                        System.out.println("after");
+                                  dos2.writeInt(55); //x
+                                  int destination=dis.readInt();
+                                  dos2.writeInt(destination);
+                                  System.out.println("sent");
+                                  String result=dis2.readUTF();
+                                  dos.writeUTF(result);
+                                  if(!(result.equals("error")))
+                                    {
+                                         float amount=dis.readFloat();
+                                           if(amount>0)
+                                                {
+                                                   result ="okay";
+                                                   dos.writeUTF(result);
+                                                   float balance=dis1.readFloat();
+                                                   if(amount<=balance)
+                                                        {
+                                                            result="good";
+                                                            dos1.writeUTF(result);
+                                                            balance=balance-amount;
+                                                            dos1.writeFloat(balance);
+                                                            dos2.writeFloat(amount);
+                                                        }
+                                                else
+                                                        {
+                                                            result="error1";
+                                                            dos1.writeUTF(result);
+                                                        }
+                                                   dos.writeUTF(result);
+                                                }
+                                    }
+                     }
+                  if(choice==8)
+                    {
+                        System.out.println("logical server inside View Transaction History ");
+                        dos.writeUTF(dis1.readUTF());
+                     }
+                  if(choice==55) //specialcase
+                  {
+                          System.out.println("Logical server inside special case");
+                          int destination=dis.readInt();
+                          dos1.writeInt(destination);
+                          String result;
+                          result=dis1.readUTF();
+                          dos.writeUTF(result);
+                          if(!(result.equals("error")))
+                          {
+                              dos1.writeFloat(dis.readFloat());//transferrenig cash to my account db
+                          }
+                      
+                  }
+                  
+                choice=dis.readInt();
+            dos1.writeInt(choice);
                 //Handle the requests from the client and request needed data
                 //from the DB server
             }
@@ -70,8 +210,11 @@ class clientHandler implements Runnable
     }
 
 }
-
-public class BankLogicServer {
+/**
+ *
+ * @author Ahmed Gomaa
+ */
+public class  BankLogicServer {
 
     /**
      * @param args the command line arguments
@@ -86,7 +229,10 @@ public class BankLogicServer {
             //1.Listen 
             //2.accept
             //3.create socket (I/O) with client
-            ServerSocket s = new ServerSocket(1234);
+             Scanner sc = new Scanner(System.in);
+             System.out.println("enter port: ");
+            int port = sc.nextInt();
+            ServerSocket s = new ServerSocket(port);
             while (true)
             {
                 

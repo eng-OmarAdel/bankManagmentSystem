@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bankclient;
+package BankClient;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 /**
- *
- * @author OmarAdel
+ * 
+ * @author  OmarAdel
+ * @author Ahmed Gomaa
  */
 public class BankClient {
 
@@ -35,20 +36,97 @@ public class BankClient {
             Socket c = new Socket(ip, port);
             DataOutputStream dos = new DataOutputStream(c.getOutputStream());
             DataInputStream dis = new DataInputStream(c.getInputStream());
-
+            int choice = 0;
             //3. perform IO
-            while (true)
+            while (choice!=9)
             {
-                //Do some stuff then break
+                
+                 System.out.println("\n please choose operation: \n");
+                 System.out.println("5 : Withdraw Money");
+                 System.out.println("6 : Transfer Money To Another Local Account");
+                 System.out.println("7 : Transfer Money To Another External Account");
+                 System.out.println("8 : Transfer Money To View Transaction History");
+                 choice = sc.nextInt();
+                 if(choice==5)
+                 {
+                    dos.writeInt(choice);
+                    System.out.println("please Enter Amount Of money: ");
+                    float amount = sc.nextFloat();
+                    dos.writeFloat(amount);
+                    String checkvalue=dis.readUTF();
+                    if(checkvalue.equals("error")){System.out.println("wrong value");}
+                    else
+                    {
+                                    checkvalue=dis.readUTF();
+                                    if(checkvalue.equals("error1")){System.out.println("No enough money");}
+                                    else{System.out.println("good, complete");}
+                    }
+                  }
+                  if(choice==6)
+                   {
+                       dos.writeInt(choice);
+                       System.out.println("please enter destination account number");
+                       int destination=sc.nextInt();
+                       dos.writeInt(destination);
+                       String checkacc=dis.readUTF();
+                        if(checkacc.equals("error")){System.out.println("wrong account");}
+                        else
+                        {
+                           System.out.println("please Enter Amount Of money: ");
+                           float amount = sc.nextFloat();
+                           dos.writeFloat(amount);
+                           String checkvalue=dis.readUTF();
+                           if(checkvalue.equals("error")){System.out.println("wrong value");}
+                           else
+                            {
+                                    checkvalue=dis.readUTF();
+                                    if(checkvalue.equals("error1")){System.out.println("No enough money");}
+                                    else{System.out.println("good, complete");}
+                             }
+                          }
+                   }
+                  if(choice==7)
+                  {
+                      dos.writeInt(choice);
+                      System.out.println("Please specify bank ");
+                      int bankid=sc.nextInt();
+                      dos.writeInt(bankid);
+                      System.out.println("please enter destination account number");
+                      int destination=sc.nextInt();
+                      dos.writeInt(destination);
+                      String checkacc=dis.readUTF();
+                      if(checkacc.equals("error")){System.out.println("wrong account");}
+                      else
+                        {
+                           System.out.println("please Enter Amount Of money: ");
+                           float amount = sc.nextFloat();
+                           dos.writeFloat(amount);
+                           String checkvalue=dis.readUTF();
+                           if(checkvalue.equals("error")){System.out.println("wrong value");}
+                           else
+                            {
+                                    checkvalue=dis.readUTF();
+                                    if(checkvalue.equals("error1")){System.out.println("No enough money");}
+                                    else{System.out.println("good, complete");}
+                             }
+                          }
+                      
+                  }
+                  if(choice==8)
+                  {
+                      dos.writeInt(choice);
+                      System.out.println(dis.readUTF());
+                  }
             }
 
             //4.close comm
             dos.close();
             dis.close();
             c.close();
-        } catch (IOException ex)
+        } 
+        catch (IOException ex)
         {
-
+            System.out.println("couldn't connect");
         }
     }
     

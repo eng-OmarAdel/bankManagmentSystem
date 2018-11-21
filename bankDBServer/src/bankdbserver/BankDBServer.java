@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package bankdbserver;
+package BankDBServer;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,12 +11,13 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 /**
  *
  * @author OmarAdel
+ * @author Ahmed Gomaa
  */
 
 class clientHandler implements Runnable
@@ -38,28 +39,75 @@ class clientHandler implements Runnable
         {
             DataOutputStream dos = new DataOutputStream(c.getOutputStream());
             DataInputStream dis = new DataInputStream(c.getInputStream());
-
+            int choice=dis.readInt();
+            float balance=1000;
             //4.perform IO with client
-            while (true)
+            while (choice!=9)
             {
+                  if(choice==5)
+                  {
+                    dos.writeFloat(balance);
+                    String result=dis.readUTF();
+                    if(result.equals("good")){balance=dis.readFloat();}
+                  }
+                  if(choice==6)
+                  {
+                      int destination=dis.readInt();//compare id with stored id's
+                      String result;
+                      result="good"; //assuming user is always there
+                      dos.writeUTF(result);
+                      if(result.equals("good"))
+                      {
+                           dos.writeFloat(balance);
+                           result=dis.readUTF();
+                           if(result.equals("good")){balance=dis.readFloat();}
+                      }
+                  }
+                  if(choice==7)
+                  {
+                           dos.writeFloat(balance);
+                           String result=dis.readUTF();
+                           if(result.equals("good")){balance=dis.readFloat();}
+                      
+                  
+                  }
+                  if(choice==8)
+                  {
+                      String history="Your History Is bla bla bla ";
+                      dos.writeUTF(history);
+                  
+                  }
+                   if(choice==55) //specialcase
+                  {
+                   int Destination=dis.readInt();
+                   dos.writeUTF("good");
+                   balance=balance+dis.readFloat();
+                   }
+                choice=dis.readInt();
+                /*
                 //Handle the requests from the Logic server to store and
                 //retrieve data from the database.
                 Statement myStmt = null;
                 ResultSet myRs = null;
                 try {
-                    // 2. Create a statement
-                    myStmt = myConn.createStatement();
+                        // 2. Create a statement
+                        myStmt = myConn.createStatement();
 
-                    // 3. Execute SQL query
-                    myRs = myStmt.executeQuery("select * from employees");
+                        // 3. Execute SQL query
+                        myRs = myStmt.executeQuery("select * from employees");
 
-                    // 4. Process the result set
-                    while (myRs.next()) {
-                        System.out.println(myRs.getString("last_name") + ", " + myRs.getString("first_name"));
-                    }
-                } catch (Exception exc) {
+                        // 4. Process the result set
+                        while (myRs.next()) 
+                            {
+                                System.out.println(myRs.getString("last_name") + ", " + myRs.getString("first_name"));
+                            }
+                } 
+                catch (Exception exc)
+                {
                     exc.printStackTrace();
-                } finally {
+                }
+                finally 
+                {
                     if (myRs != null) {
                         myRs.close();
                     }
@@ -71,7 +119,7 @@ class clientHandler implements Runnable
                     if (myConn != null) {
                         myConn.close();
                     }
-                }
+                }*/
             }
 
             //5. close comm with client
@@ -86,6 +134,7 @@ class clientHandler implements Runnable
     }
 
 }
+
 
 public class BankDBServer {
 
@@ -102,7 +151,10 @@ public class BankDBServer {
             //1.Listen 
             //2.accept
             //3.create socket (I/O) with client
-            ServerSocket s = new ServerSocket(2222);
+           Scanner sc = new Scanner(System.in);
+           System.out.println("enter port: ");
+            int port = sc.nextInt();
+            ServerSocket s = new ServerSocket(port);
             Connection myConn = null;
             
             try {
@@ -139,5 +191,6 @@ public class BankDBServer {
         }
 
     }
+    
     
 }
