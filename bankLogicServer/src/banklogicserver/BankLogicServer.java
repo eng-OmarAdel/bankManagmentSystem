@@ -53,13 +53,84 @@ class clientHandler implements Runnable
             DataOutputStream dos1 = new DataOutputStream(dbSocket.getOutputStream());
             DataInputStream dis1 = new DataInputStream(dbSocket.getInputStream());
             
+            int accountNumber=-1;
             int choice=dis.readInt();
             dos1.writeInt(choice);
             //4.perform IO with client
-            while (choice!=9)
+            while (choice!=0)
             {
                 System.out.println("server inside while");
                 System.out.println(choice);
+                 if(choice == 1)
+                {
+                    System.out.println("Logical server inside Sign up");
+                    String name = dis.readUTF();
+                    dos1.writeUTF(name);
+                    String pass = dis.readUTF();
+                    dos1.writeUTF(pass);
+                    accountNumber=dis1.readInt();
+                }
+                if(choice == 2)
+                {
+                    System.out.println("Logical server inside login");
+                    int acc_id = dis.readInt();
+                    dos1.writeInt(acc_id);
+                    String result=dis1.readUTF();
+                    dos.writeUTF(result);
+                    if (result.equals("okay"))
+                    {
+                         String pass = dis.readUTF();
+                         String localpass=dis1.readUTF();
+                         if (pass.equals(localpass))
+                         {
+                             result = "good";
+                             dos.writeUTF(result);
+                         }
+                         else {
+                             System.out.println(pass);
+                             result="error";
+                             dos.writeUTF(result);
+                         }
+                    }
+                }
+                if(choice==3)
+                {
+                    System.out.println("logical server inside current balance");
+                    if(accountNumber==-1){
+                        /*logIn();*/
+                    }
+                    else{
+                        dos1.writeInt(accountNumber);
+                        float balance=dis1.readFloat();
+                        dos.writeFloat(balance);
+                    }
+                    
+                }
+                if(choice==4)
+                {
+                    System.out.println("Logical server inside deposit");
+                    if(accountNumber==-1){
+                        /*logIn()*/
+                    }
+                    else{
+                        float amount=dis.readFloat();
+                        String result;
+                        if(amount>0)
+                        {
+                            result ="okay";
+                            float balance =dis1.readFloat();
+                            balance=balance+amount;
+                            dos1.writeFloat(balance);
+                            dos.writeUTF(result);
+                        }
+                        else
+                        {
+                        result="error";
+                        dos.writeUTF(result);
+                        }
+                    }
+                    
+                }
                 if(choice==5)
                     {
                         System.out.println("Logical server inside withdraw");

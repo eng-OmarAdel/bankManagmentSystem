@@ -42,8 +42,34 @@ class clientHandler implements Runnable
             int choice=dis.readInt();
             float balance=1000;
             //4.perform IO with client
-            while (choice!=9)
+            while (choice!=0)
             {
+                     if(choice==1)
+                {
+                    String name = dis.readUTF();
+                    String pass = dis.readUTF();
+                    //int id=newUserId();
+                    dos.writeInt(5);
+                }
+                if(choice==2)
+                {
+                    int acc_id = dis.readInt();
+                    dos.writeUTF("okay");
+                    String pass = "newyork";
+                    dos.writeUTF(pass);
+                }
+               if(choice==3)
+                {
+                    int accountNumber=dis.readInt();
+                    /*get balance from MySQL server*/
+                    dos.writeFloat(balance);
+                }
+                if(choice==4)
+                {
+                    dos.writeFloat(balance);
+                    balance=dis.readFloat();
+                    /*insert balance to MySQL server*/
+                }
                   if(choice==5)
                   {
                     dos.writeFloat(balance);
