@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BankClient;
+package bankclient;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -36,7 +36,7 @@ public class BankClient {
             Socket c = new Socket(ip, port);
             DataOutputStream dos = new DataOutputStream(c.getOutputStream());
             DataInputStream dis = new DataInputStream(c.getInputStream());
-           int choice =100;
+           int choice =100,accountNumber=-1;
             boolean logged_in=false;
             //3. perform IO
             while (choice!=0)
@@ -57,6 +57,8 @@ public class BankClient {
                            System.out.println("please Enter password: ");
                            String pass = sc.nextLine();
                            dos.writeUTF(pass);
+                           accountNumber=dis.readInt();
+                           System.out.println("\n Your Account ID is: "+Integer.toString(accountNumber));
                            logged_in=true;
                        }
                       if (choice == 2)
@@ -154,11 +156,10 @@ public class BankClient {
                           if(choice==7)
                           {
                               dos.writeInt(choice);
-                              System.out.println("Please specify bank ");
-                              int bankid=sc.nextInt();
-                              dos.writeInt(bankid);
+                              System.out.println("Please specify bank name: ");
+                              String bankname=sc.nextLine();
                               System.out.println("please enter destination account number");
-                              int destination=sc.nextInt();
+                              int destination=Integer.parseInt(sc.nextLine());
                               dos.writeInt(destination);
                               String checkacc=dis.readUTF();
                               if(checkacc.equals("error")){System.out.println("wrong account");}
