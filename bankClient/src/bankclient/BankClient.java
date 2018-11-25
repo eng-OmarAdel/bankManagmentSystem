@@ -92,7 +92,7 @@ public class BankClient {
                         System.out.println("5 : Transfer Money To Another External Account");
                         System.out.println("6 : View Transaction History");
                         System.out.println("0 : Exit \n\n ------------------------- ");
-                        choice = sc.nextInt();
+                        choice = Integer.parseInt(sc.nextLine());
                         if(choice!=0){choice=choice+2;}
                         if(choice==3)
                             {
@@ -103,7 +103,7 @@ public class BankClient {
                             {
                                 dos.writeInt(choice);
                                 System.out.println("please Enter Amount Of money: ");
-                                float amount = sc.nextFloat();
+                                float amount = Float.parseFloat(sc.nextLine());
                                 dos.writeFloat(amount);
                                 String checkvalue=dis.readUTF();
                                 if(checkvalue.equals("error"))
@@ -119,7 +119,7 @@ public class BankClient {
                          {
                             dos.writeInt(choice);
                             System.out.println("please Enter Amount Of money: ");
-                            float amount = sc.nextFloat();
+                            float amount = Float.parseFloat(sc.nextLine());
                             dos.writeFloat(amount);
                             String checkvalue=dis.readUTF();
                             if(checkvalue.equals("error")){System.out.println("wrong value");}
@@ -134,14 +134,14 @@ public class BankClient {
                            {
                                dos.writeInt(choice);
                                System.out.println("please enter destination account number");
-                               int destination=sc.nextInt();
+                               int destination=Integer.parseInt(sc.nextLine());
                                dos.writeInt(destination);
                                String checkacc=dis.readUTF();
                                 if(checkacc.equals("error")){System.out.println("wrong account");}
                                 else
                                 {
                                    System.out.println("please Enter Amount Of money: ");
-                                   float amount = sc.nextFloat();
+                                   float amount = Float.parseFloat(sc.nextLine());
                                    dos.writeFloat(amount);
                                    String checkvalue=dis.readUTF();
                                    if(checkvalue.equals("error")){System.out.println("wrong value");}
@@ -156,8 +156,9 @@ public class BankClient {
                           if(choice==7)
                           {
                               dos.writeInt(choice);
-                              System.out.println("Please specify bank name: ");
-                              String bankname=sc.nextLine();
+                              System.out.println("Please specify bank port: ");
+                              int bankPort=Integer.parseInt(sc.nextLine());
+                              dos.writeInt(bankPort);
                               System.out.println("please enter destination account number");
                               int destination=Integer.parseInt(sc.nextLine());
                               dos.writeInt(destination);
@@ -166,7 +167,7 @@ public class BankClient {
                               else
                                 {
                                    System.out.println("please Enter Amount Of money: ");
-                                   float amount = sc.nextFloat();
+                                   float amount = Float.parseFloat(sc.nextLine());
                                    dos.writeFloat(amount);
                                    String checkvalue=dis.readUTF();
                                    if(checkvalue.equals("error")){System.out.println("wrong value");}
