@@ -21,7 +21,6 @@ import java.util.logging.Logger;
  * @author OmarAdel
  * @author Ahmed Gomaa
  */
-
 class clientHandler implements Runnable {
 
     Socket c;
@@ -124,7 +123,7 @@ class clientHandler implements Runnable {
                         myRs = myStmt.executeQuery("SELECT balance FROM Users WHERE id=" + Integer.toString(accountNumber));
                         myRs.next();
                         balance = myRs.getFloat("balance");
-                        float oldBalance=balance;
+                        float oldBalance = balance;
                         dos.writeFloat(balance);
 
                         myStmt = myConn.createStatement();
@@ -138,11 +137,11 @@ class clientHandler implements Runnable {
                         if (result.equals("good")) {
                             balance = dis.readFloat();
                             balance2 = dis.readFloat();
-                            
+
                             myStmt.executeUpdate("INSERT INTO Trans (fromID, toID, amount)"
-                            + "VALUES (" + Integer.toString(accountNumber) + ", " 
-                            + Integer.toString(destination) + ", "
-                            +Float.toString(abs(oldBalance-balance)) +");");
+                                    + "VALUES (" + Integer.toString(accountNumber) + ", "
+                                    + Integer.toString(destination) + ", "
+                                    + Float.toString(abs(oldBalance - balance)) + ");");
                             myStmt.executeUpdate("UPDATE Users SET balance=" + Float.toString(balance) + " WHERE id=" + Integer.toString(accountNumber));
                             myStmt.executeUpdate("UPDATE Users SET balance=" + Float.toString(balance2) + " WHERE id=" + Integer.toString(destination));
 
@@ -150,7 +149,7 @@ class clientHandler implements Runnable {
                     }
                 }
                 if (choice == 7) {
-                    
+
                     int accountNumber = dis.readInt();
                     int destination = dis.readInt();
                     // 2. Create a statement
@@ -159,16 +158,16 @@ class clientHandler implements Runnable {
                     myRs = myStmt.executeQuery("SELECT balance FROM Users WHERE id=" + Integer.toString(accountNumber));
                     myRs.next();
                     balance = myRs.getFloat("balance");
-                    float oldBalance=balance;
+                    float oldBalance = balance;
                     dos.writeFloat(balance);
                     String result = dis.readUTF();
                     if (result.equals("good")) {
                         balance = dis.readFloat();
-                        
+
                         myStmt.executeUpdate("INSERT INTO Trans (fromID, toID, amount)"
-                            + "VALUES (" + Integer.toString(accountNumber) + ", " 
-                            + Integer.toString(destination) + ", "
-                            +Float.toString(abs(oldBalance-balance)) +");");
+                                + "VALUES (" + Integer.toString(accountNumber) + ", "
+                                + Integer.toString(destination) + ", "
+                                + Float.toString(abs(oldBalance - balance)) + ");");
                         myStmt.executeUpdate("UPDATE Users SET balance=" + Float.toString(balance) + " WHERE id=" + Integer.toString(accountNumber));
 
                     }
@@ -184,12 +183,12 @@ class clientHandler implements Runnable {
                     String history = "From account: " + Integer.toString(myRs.getInt("fromID"))
                             + " To account: " + Integer.toString(myRs.getInt("toID"))
                             + " amount: " + Float.toString(myRs.getFloat("amount"));
-                    
-                        while (myRs.next()) {
-                            history += "\nFrom account: " + Integer.toString(myRs.getInt("fromID"))
-                                    + " To account: " + Integer.toString(myRs.getInt("toID"))
-                                    + " amount: " + Float.toString(myRs.getFloat("amount"));
-                        }
+
+                    while (myRs.next()) {
+                        history += "\nFrom account: " + Integer.toString(myRs.getInt("fromID"))
+                                + " To account: " + Integer.toString(myRs.getInt("toID"))
+                                + " amount: " + Float.toString(myRs.getFloat("amount"));
+                    }
 
                     dos.writeUTF(history);
 
@@ -197,20 +196,25 @@ class clientHandler implements Runnable {
                 if (choice == 55) //specialcase
                 {
                     int Destination = dis.readInt();
-                    
+                    int source = dis.readInt();
                     myStmt = myConn.createStatement();
                     // 3. Execute SQL query
                     myRs = myStmt.executeQuery("SELECT balance FROM Users WHERE id=" + Integer.toString(Destination));
                     myRs.next();
                     balance = myRs.getFloat("balance");
+                    float oldBalance=balance;
                     dos.writeFloat(balance);
 
-                    
-                    
                     dos.writeUTF("good");
-                    
+
                     balance = dis.readFloat();
                     myStmt.executeUpdate("UPDATE Users SET balance=" + Float.toString(balance) + " WHERE id=" + Integer.toString(Destination));
+
+                    myStmt.executeUpdate("INSERT INTO Trans (fromID, toID, amount)"
+                            + "VALUES (" + Integer.toString(source) + ", "
+                            + Integer.toString(Destination) + ", "
+                            + Float.toString(abs(oldBalance - balance)) + ");");
+                   
                 }
                 choice = dis.readInt();
                 /*
@@ -258,7 +262,6 @@ class clientHandler implements Runnable {
         } catch (Exception e) {
             System.out.println("Something went wrong ");
         }
-        
 
     }
 
@@ -284,9 +287,9 @@ public class BankDBServer {
 
             try {
                 // 1. Get a connection to database
-                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test"+Integer.toString(port)
-                        , "root"
-                        , "@Root!");
+                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test" + Integer.toString(port),
+                         "root",
+                         "@Root!");
 
             } catch (SQLException ex) {
                 Logger.getLogger(BankDBServer.class.getName()).log(Level.SEVERE, null, ex);
