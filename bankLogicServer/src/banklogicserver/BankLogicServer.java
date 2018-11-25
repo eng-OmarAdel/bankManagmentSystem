@@ -225,6 +225,7 @@ class clientHandler implements Runnable
                                   int destination=dis.readInt();
                                   
                                   dos2.writeInt(destination);
+                                  dos2.writeInt(accountNumber);
                                   
                                   System.out.println("sent");
                                   /*Sent destination account and waiting*/
@@ -267,7 +268,9 @@ class clientHandler implements Runnable
                   {
                           System.out.println("Logical server inside special case");
                           int destination=dis.readInt();
+                          int source=dis.readInt();
                           dos1.writeInt(destination);
+                          dos1.writeInt(source);
                           float balance=dis1.readFloat();
                           String result;
                           result=dis1.readUTF();
