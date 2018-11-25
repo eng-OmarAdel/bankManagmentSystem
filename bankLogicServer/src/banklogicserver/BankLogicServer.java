@@ -214,7 +214,7 @@ class clientHandler implements Runnable
                         //----------
                         System.out.println("before");
                         String external_Ip = "localhost";
-                        int external_port = 3333; //needs changing
+                        int external_port = dis.readInt(); //needs changing
                         Socket externalSocket = new Socket(external_Ip, external_port);
                         DataOutputStream dos2 = new DataOutputStream(externalSocket.getOutputStream());
                         DataInputStream dis2 = new DataInputStream(externalSocket.getInputStream());
@@ -318,7 +318,7 @@ public class  BankLogicServer {
             //3.create socket (I/O) with client
              Scanner sc = new Scanner(System.in);
              System.out.println("enter port: ");
-            int port = sc.nextInt();
+            int port = Integer.parseInt(sc.nextLine());
             ServerSocket s = new ServerSocket(port);
             while (true)
             {
