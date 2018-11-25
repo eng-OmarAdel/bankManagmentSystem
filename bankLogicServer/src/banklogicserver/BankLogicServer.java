@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package    BankLogicServer;
+package    banklogicserver;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -69,11 +69,13 @@ class clientHandler implements Runnable
                     String pass = dis.readUTF();
                     dos1.writeUTF(pass);
                     accountNumber=dis1.readInt();
+                    dos.writeInt(accountNumber);
                 }
                 if(choice == 2)
                 {
                     System.out.println("Logical server inside login");
                     int acc_id = dis.readInt();
+                    accountNumber=acc_id;
                     dos1.writeInt(acc_id);
                     String result=dis1.readUTF();
                     dos.writeUTF(result);
@@ -113,6 +115,7 @@ class clientHandler implements Runnable
                         /*logIn()*/
                     }
                     else{
+                        dos1.writeInt(accountNumber);
                         float amount=dis.readFloat();
                         String result;
                         if(amount>0)
@@ -134,6 +137,7 @@ class clientHandler implements Runnable
                 if(choice==5)
                     {
                         System.out.println("Logical server inside withdraw");
+                        dos1.writeInt(accountNumber);
                         float amount=dis.readFloat();
                         String result;
                             if(amount>0)
@@ -169,6 +173,7 @@ class clientHandler implements Runnable
                            String result;
                            result=dis1.readUTF();
                           dos.writeUTF(result);
+                          dos1.writeInt(accountNumber);
                           if(!(result.equals("error")))
                           {
                             float amount=dis.readFloat();
@@ -176,13 +181,16 @@ class clientHandler implements Runnable
                             {
                                result ="okay";
                                dos.writeUTF(result);
-                               float balance=dis1.readFloat();
-                               if(amount<=balance)
+                               float balanceFrom=dis1.readFloat();
+                               float balanceTo=dis1.readFloat();
+                               if(amount<=balanceFrom)
                                     {
                                         result="good";
                                         dos1.writeUTF(result);
-                                        balance=balance-amount;
-                                        dos1.writeFloat(balance);
+                                        balanceFrom=balanceFrom-amount;
+                                        balanceTo=balanceTo+amount;
+                                        dos1.writeFloat(balanceFrom);
+                                        dos1.writeFloat(balanceTo);
                                     }
                             else
                                     {
@@ -202,20 +210,24 @@ class clientHandler implements Runnable
                  if(choice==7)
                     {
                         System.out.println("Logical server inside external transfer ");
-                        int bankid=dis.readInt(); // define ip and port upon bankid from some list
+                        // define ip and port upon bankid from some list
                         //----------
                         System.out.println("before");
-                         String external_Ip = "localhost";
-                         int external_port = 3333; //needs changing
-                         Socket externalSocket = new Socket(external_Ip, external_port);
-                         DataOutputStream dos2 = new DataOutputStream(externalSocket.getOutputStream());
-                         DataInputStream dis2 = new DataInputStream(externalSocket.getInputStream());
+                        String external_Ip = "localhost";
+                        int external_port = 3333; //needs changing
+                        Socket externalSocket = new Socket(external_Ip, external_port);
+                        DataOutputStream dos2 = new DataOutputStream(externalSocket.getOutputStream());
+                        DataInputStream dis2 = new DataInputStream(externalSocket.getInputStream());
+                        
                         //----------
                         System.out.println("after");
                                   dos2.writeInt(55); //x
                                   int destination=dis.readInt();
+                                  
                                   dos2.writeInt(destination);
+                                  
                                   System.out.println("sent");
+                                  /*Sent destination account and waiting*/
                                   String result=dis2.readUTF();
                                   dos.writeUTF(result);
                                   if(!(result.equals("error")))
@@ -225,6 +237,8 @@ class clientHandler implements Runnable
                                                 {
                                                    result ="okay";
                                                    dos.writeUTF(result);
+                                                   dos1.writeInt(accountNumber);
+                                                   dos1.writeInt(destination);
                                                    float balance=dis1.readFloat();
                                                    if(amount<=balance)
                                                         {
@@ -246,6 +260,7 @@ class clientHandler implements Runnable
                   if(choice==8)
                     {
                         System.out.println("logical server inside View Transaction History ");
+                        dos1.writeInt(accountNumber);
                         dos.writeUTF(dis1.readUTF());
                      }
                   if(choice==55) //specialcase
@@ -253,12 +268,13 @@ class clientHandler implements Runnable
                           System.out.println("Logical server inside special case");
                           int destination=dis.readInt();
                           dos1.writeInt(destination);
+                          float balance=dis1.readFloat();
                           String result;
                           result=dis1.readUTF();
                           dos.writeUTF(result);
                           if(!(result.equals("error")))
                           {
-                              dos1.writeFloat(dis.readFloat());//transferrenig cash to my account db
+                              dos1.writeFloat(balance+dis.readFloat());//transferrenig cash to my account db
                           }
                       
                   }
