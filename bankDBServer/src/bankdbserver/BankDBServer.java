@@ -50,7 +50,7 @@ class clientHandler implements Runnable {
                     myStmt = myConn.createStatement();
 
                     // 3. Execute SQL query
-                    myStmt.executeUpdate("INSERT INTO Users (name, password)"
+                    myStmt.executeUpdate("INSERT INTO users (name, password)"
                             + "VALUES ('" + name + "', '" + pass + "');");
                     myRs = myStmt.executeQuery("SELECT MAX(id) AS id FROM Users;");
                     myRs.next();
@@ -187,8 +187,8 @@ class clientHandler implements Runnable {
                     
                         while (myRs.next()) {
                             history += "\nFrom account: " + Integer.toString(myRs.getInt("fromID"))
-                                    + "To account: " + Integer.toString(myRs.getInt("toID"))
-                                    + "amount: " + Float.toString(myRs.getFloat("amount"));
+                                    + " To account: " + Integer.toString(myRs.getInt("toID"))
+                                    + " amount: " + Float.toString(myRs.getFloat("amount"));
                         }
 
                     dos.writeUTF(history);
@@ -278,13 +278,15 @@ public class BankDBServer {
             //3.create socket (I/O) with client
             Scanner sc = new Scanner(System.in);
             System.out.println("enter port: ");
-            int port = sc.nextInt();
+            int port = Integer.parseInt(sc.nextLine());
             ServerSocket s = new ServerSocket(port);
             Connection myConn = null;
 
             try {
                 // 1. Get a connection to database
-                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "@Root!");
+                myConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/test"+Integer.toString(port)
+                        , "root"
+                        , "@Root!");
 
             } catch (SQLException ex) {
                 Logger.getLogger(BankDBServer.class.getName()).log(Level.SEVERE, null, ex);
